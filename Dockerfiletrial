@@ -1,0 +1,14 @@
+FROM alpine:3.13 AS builder
+
+WORKDIR /app
+
+RUN apk add --no-cache dos2unix
+COPY ./my-httpd.conf httpd.conf
+RUN dos2unix httpd.conf
+
+FROM httpd:2.4
+
+COPY --from=builder /app /usr/local/apache2/conf/
+COPY ./server.crt /usr/local/apache2/conf/
+COPY ./server.key /usr/local/apache2/conf/
+COPY ./index.html /usr/local/apache2/htdocs/
